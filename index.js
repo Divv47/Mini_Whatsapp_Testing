@@ -5,7 +5,7 @@ const port = 8080
 const path = require ("path")
 const chat = require("./models/chat.js");
 
-
+app.use(express.urlencoded({extended:true}))
 app.set("views" , path.join(__dirname,"views"));
 app.set("view engine" ,"ejs");
 app.use(express.static(path.join(__dirname,"public")))
@@ -21,6 +21,23 @@ app.get("/chat", async (req,res)=>{
     res.render("chats", { chats });   // ✅ no .ejs extension
 });
 
+app.get("/chat/new" , (req,res) =>{
+    res.render("new.ejs")
+})
+
+app.post("/chats",(req,res)=>{
+    let {from , to , msg } = req.body;
+    let newChat = new chat({
+        from : from,
+        to : to, 
+        msg : msg, 
+        created_at :  Date()
+    })
+    newChat.save().then(res =>{console.log("chat was saved").catch(err=>{console.log(err);
+    })
+    })
+    res.redirect("/chats")
+})
 let chat1 = new chat({
     from :"Ramu",
     to : "Arun",
